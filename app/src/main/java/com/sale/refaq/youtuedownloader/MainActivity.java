@@ -16,10 +16,6 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.textservice.SentenceSuggestionsInfo;
-import android.view.textservice.SpellCheckerSession;
-import android.view.textservice.SuggestionsInfo;
-import android.view.textservice.TextInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -30,15 +26,11 @@ import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 
-public class MainActivity extends AppCompatActivity  implements SpellCheckerSession.SpellCheckerSessionListener {
+public class MainActivity extends AppCompatActivity {
 
     private LinearLayout linearLayout ;
     private EditText linkEt;
     private Button downloadBtn;
-
-    //checker
-    private SpellCheckerSession mScs;
-    //
 
     //
     private static final int STORAGE_REQUEST_CODE = 100;
@@ -88,22 +80,11 @@ public class MainActivity extends AppCompatActivity  implements SpellCheckerSess
     {
         ActivityCompat.requestPermissions(this,storagePermissions,STORAGE_REQUEST_CODE);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == STORAGE_REQUEST_CODE){
-            if(grantResults.length>0)
-            {
-                boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                if ( storageAccepted)
-                {
-                    //permission allowed
-                   getYoutubeDownloadUrl(youtubeLink);
-                }else
-                {
-                    //permissions denied
-                    Toast.makeText(this, "storage Permission is necessary...", Toast.LENGTH_SHORT).show();
-                }
-            }
+
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -163,7 +144,6 @@ public class MainActivity extends AppCompatActivity  implements SpellCheckerSess
     }
     private void downloadFromUrl(String youtubeDlUrl, String downloadTitle, String fileName) {
         Uri uri = Uri.parse(youtubeDlUrl);
-
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(downloadTitle);
 
@@ -172,20 +152,10 @@ public class MainActivity extends AppCompatActivity  implements SpellCheckerSess
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
 
         //
-        mScs.getSuggestions(new TextInfo(linkEt.getText().toString()), 5);
+
         //
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         assert manager != null;
         manager.enqueue(request);
-    }
-
-    @Override
-    public void onGetSuggestions(SuggestionsInfo[] results) {
-
-    }
-
-    @Override
-    public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
-
     }
 }
